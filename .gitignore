@@ -1,0 +1,44 @@
+# Simulation and dataset output
+*.h5
+*.hdf5
+
+# Slurm output
+slurm-*.out
+slurm-*.err
+std.log
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+.venv_unix/
+.venv_windows/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb~
+**/.ipynb_checkpoints
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.log
+*.out
+*.err
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
