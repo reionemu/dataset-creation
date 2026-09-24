@@ -1,4 +1,5 @@
 # Simulation and dataset output
+data/
 *.h5
 *.hdf5
 
