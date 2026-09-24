@@ -16,6 +16,16 @@ from reionemu.simio import (
     condense_sim_root,
 )
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+# Campaign to process
+CAMPAIGN = "v7"
+# Local data root
+DATA_ROOT = REPO_ROOT / "data"
+# Raw simulation output and condensed HDF5 for this campaign
+RAW_SIM_ROOT = DATA_ROOT / "raw" / f"sims_{CAMPAIGN}"
+CONDENSED_H5 = DATA_ROOT / "processed" / f"condensed_{CAMPAIGN}.h5"
+
 
 def _progress_print(step: str):
     """
@@ -30,12 +40,14 @@ def _progress_print(step: str):
 
 
 def main():
-    raw_sim_root = Path(
-        r"/Users/robertxpearce/Desktop/reionization-emulator/datasets/raw/sims_v6"
-    )
-    condensed_h5 = Path(
-        r"/Users/robertxpearce/Desktop/reionization-emulator/datasets/processed/TEST.h5"
-    )
+    raw_sim_root = RAW_SIM_ROOT
+    condensed_h5 = CONDENSED_H5
+    if not raw_sim_root.is_dir():
+        raise FileNotFoundError(f"{raw_sim_root} not found")
+    # Never overwrite an existing condensed file
+    if condensed_h5.exists():
+        raise FileExistsError(f"{condensed_h5} already exists")
+    condensed_h5.parent.mkdir(parents=True, exist_ok=True)
 
     print("Condensing Raw Simulation Outputs")
     stats = condense_sim_root(
@@ -77,7 +89,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# -----------------------------
-#         END OF FILE
-# -----------------------------
