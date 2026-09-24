@@ -17,10 +17,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 EXEC = Path.home() / "software/ksz_2lpt/ksz_2lpt.x"
 # Input table ksz_2lpt opens by bare name, so it runs from the executable's folder
 TRANSFER_FILE = EXEC.parent / "planck_2018_transfer_z000.dat"
-# Local data root (not tracked); on Bridges-2 link it to Ocean: ln -s ~/ocean data
-DATA_ROOT = REPO_ROOT / "data"
-# Output root; each campaign writes to sims_<campaign>/ under it
-RAW_ROOT = DATA_ROOT / "raw"
+# Output root on Ocean project storage (~/ocean links there), not the home quota
+RAW_ROOT = Path.home() / "ocean/raw"
 
 # Campaign folders in this repository, holding params_<campaign>.txt
 CAMPAIGNS_DIR = REPO_ROOT / "campaigns"
@@ -30,10 +28,11 @@ def main() -> int:
     # Campaign to run (set with sbatch --export=ALL,CAMPAIGN=<name>)
     campaign = os.environ["CAMPAIGN"]
     param_file = CAMPAIGNS_DIR / campaign / f"params_{campaign}.txt"
+    # Require the Ocean output root, so output never lands in the home quota
+    if not RAW_ROOT.is_dir():
+        raise FileNotFoundError(f"{RAW_ROOT} not found")
+    # Each campaign writes to sims_<campaign>/ under it
     out = RAW_ROOT / f"sims_{campaign}"
-    # Require the data root to exist, so output never lands in home by accident
-    if not DATA_ROOT.is_dir():
-        raise FileNotFoundError(f"{DATA_ROOT} not found; create it or link it")
     # A missing table would be created empty by ksz_2lpt and fail every run
     if not TRANSFER_FILE.is_file() or TRANSFER_FILE.stat().st_size == 0:
         raise FileNotFoundError(f"{TRANSFER_FILE} missing or empty")
@@ -74,7 +73,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
-# -----------------------------
-#         END OF FILE
-# -----------------------------

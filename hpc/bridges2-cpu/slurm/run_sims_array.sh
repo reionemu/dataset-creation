@@ -30,7 +30,7 @@ which ifort
 export KMP_LIBRARY=turnaround
 export KMP_SCHEDULE=static
 export KMP_STACKSIZE=256m
-# Number of OpenMP threads (match with Slurm CPU request)
+# Number of OpenMP threads
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 echo "SLURM_ARRAY_JOB_ID=${SLURM_ARRAY_JOB_ID:-}"

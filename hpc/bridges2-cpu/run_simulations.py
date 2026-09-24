@@ -8,12 +8,11 @@ from pathlib import Path
 
 from scipy.stats import qmc
 
-# Path to simulation executable and output directory
-# Repository root (this file is hpc/bridges2-cpu/run_simulations.py)
-REPO_ROOT = Path(__file__).resolve().parents[2]
+# Path to simulation executable
 EXEC = Path.home() / "software/ksz_2lpt/ksz_2lpt.x"
-# Local data root (not tracked); on Bridges-2 link it to Ocean: ln -s ~/ocean data
-OUT = REPO_ROOT / "data/raw/sims_v6"
+# Output root on Ocean project storage (~/ocean links there), not the home quota
+RAW_ROOT = Path.home() / "ocean/raw"
+OUT = RAW_ROOT / "sims_v6"
 
 # Number of samples / simulations
 NUM_SAMPLES = 1_000
@@ -78,10 +77,13 @@ def run_samples(samples, outroot):
 
 
 def main():
+    # Require the Ocean output root, so output never lands in the home quota
+    if not RAW_ROOT.is_dir():
+        raise FileNotFoundError(f"{RAW_ROOT} not found")
     # Never write into an existing campaign's output (this would overwrite v6)
     if OUT.exists():
         raise FileExistsError(f"{OUT} already exists")
-    OUT.mkdir(parents=True)
+    OUT.mkdir()
     # Take just the lo and hi bounds of each param
     bounds = [(lo, hi) for (_name, lo, hi) in PARAMS]
     # Sample parameter sets with Latin Hypercube Sampling
@@ -92,7 +94,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# -----------------------------
-#         END OF FILE
-# -----------------------------
